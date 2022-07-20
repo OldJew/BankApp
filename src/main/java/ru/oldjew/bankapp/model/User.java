@@ -22,4 +22,5 @@ public class User {
 
     @Column(name = "BALANCE")
     private BigDecimal balance;
+
 }
