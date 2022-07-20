@@ -1,6 +1,7 @@
 package ru.oldjew.bankapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 @Data
 @RequiredArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity(name = "FIN_OPERATIONS")
 public class FinanceOperation {
 
@@ -20,8 +22,12 @@ public class FinanceOperation {
     @ManyToOne
     @JoinColumn(name = "USER_ID", nullable = false)
     @NonNull
-    @JsonIgnore
-    private User user;
+    @JsonIgnore()
+    private User sender;
+
+    @ManyToOne
+    @JoinColumn(name = "RECIPIENT_ID", nullable = true)
+    private User recipient;
 
     @NonNull
     @Column(name = "OPERATION", nullable = false)
@@ -34,8 +40,18 @@ public class FinanceOperation {
     @Column(name = "DATE")
     private LocalDate date;
 
-    public FinanceOperation(@NonNull User user, @NonNull String operation, @NonNull BigDecimal value, LocalDate date) {
-        this.user = user;
+    public FinanceOperation(@NonNull User sender, @NonNull String operation, @NonNull BigDecimal value,
+                            LocalDate date) {
+        this.sender = sender;
+        this.operation = operation;
+        this.value = value;
+        this.date = date;
+    }
+
+    public FinanceOperation(@NonNull User sender, User recipient, @NonNull String operation, @NonNull BigDecimal value,
+                            LocalDate date) {
+        this.sender = sender;
+        this.recipient = recipient;
         this.operation = operation;
         this.value = value;
         this.date = date;

@@ -56,4 +56,11 @@ public class UserOperationController {
         }
         return financeService.getOperationList(userId, from, to);
     }
+
+    @GetMapping("/transferMoney")
+    public ResponseJson transferMoney(@RequestParam(value = "senderId") Long senderId,
+                                      @RequestParam(value = "recipientId") Long recipientId,
+                                      @RequestParam(value = "amount") BigDecimal amount){
+        return financeService.transferMoney(senderId, recipientId, amount);
+    }
 }

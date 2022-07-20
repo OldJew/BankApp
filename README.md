@@ -3,8 +3,7 @@ Final project on Skillfactory course. App for bank <br>
 Настройка бд производится в файле application-customDB.properties<br>
 с указанием параметра --spring.profiles.active=customDB в classpath
 ## Функционал 
-Реализованы методы getBalance, takeMoney, putMoney, getOperationList. В дальнейшем
-будет добавлен Swagger
+Реализованы методы getBalance, takeMoney, putMoney, getOperationList, transferMoney
 
 ### Screenshots
 ##### V1_DB

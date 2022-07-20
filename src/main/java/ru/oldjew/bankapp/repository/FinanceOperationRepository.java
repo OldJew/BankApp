@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface FinanceOperationRepository extends JpaRepository<FinanceOperation, Long> {
 
-    @Query("select f from FIN_OPERATIONS f where f.user.id = ?1")
+    @Query("select f from FIN_OPERATIONS f where USER_ID= ?1")
     List<FinanceOperation> findOperationsByUserId(Long userId);
 }

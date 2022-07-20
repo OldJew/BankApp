@@ -51,7 +51,7 @@ public class FinanceService {
                 return new ResponseJson(0, "Недостаточно средств");
             } else {
                 target.setBalance(target.getBalance().subtract(amount));
-                FinanceOperation operation = new FinanceOperation(target, "withdraw", amount, LocalDate.now());
+                FinanceOperation operation = new FinanceOperation(target,"withdraw", amount, LocalDate.now());
                 userRepository.save(target);
                 financeOperationRepository.save(operation);
                 return new ResponseJson(1);
@@ -94,5 +94,23 @@ public class FinanceService {
                     .collect(Collectors.toList());
                 }
             return operationsList;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public ResponseJson transferMoney(Long senderId, Long recipientId, BigDecimal amount){
+        User sender = userRepository.findById(senderId).orElseThrow(RuntimeException::new);
+        User recipient = userRepository.findById(recipientId).orElseThrow(RuntimeException::new);
+        if (sender.getBalance().subtract(amount).compareTo(amount) >= 0){
+            sender.setBalance(sender.getBalance().subtract(amount));
+            recipient.setBalance(recipient.getBalance().add(amount));
+            userRepository.save(sender);
+            userRepository.save(recipient);
+            FinanceOperation operation =
+                    new FinanceOperation(sender, recipient, "transfer", amount, LocalDate.now());
+            financeOperationRepository.save(operation);
+            return new ResponseJson(1, "Операция успешна");
+        } else {
+            return new ResponseJson(0, "Недостаточно средств");
+        }
     }
 }
