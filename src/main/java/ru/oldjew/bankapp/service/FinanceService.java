@@ -7,6 +7,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.oldjew.bankapp.exceptions.FinanceOperationNotFound;
+import ru.oldjew.bankapp.exceptions.UserNotFoundException;
 import ru.oldjew.bankapp.model.FinanceOperation;
 import ru.oldjew.bankapp.model.ResponseJson;
 import ru.oldjew.bankapp.model.User;
@@ -31,46 +33,34 @@ public class FinanceService {
     private final FinanceOperationRepository financeOperationRepository;
 
 
-    public Optional<BigDecimal> getBalance(Long userId){
-        BigDecimal balance = null;
-        try {
-            balance =userRepository.findById(userId).get().getBalance();
-        } catch (Exception e){
-            log.info(e.getMessage());
-        }
+    public Optional<BigDecimal> getBalance(Long userId) throws UserNotFoundException {
+        BigDecimal balance = getUser(userId).getBalance();
         Optional<BigDecimal> result = Optional.of(balance);
         return result;
     }
 
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ResponseJson takeMoney(Long userId, BigDecimal amount){
-        if (userRepository.existsById(userId)){
-            User target = userRepository.findById(userId).get();
-            if(target.getBalance().compareTo(amount) < 0){
-                return new ResponseJson(0, "Недостаточно средств");
-            } else {
-                target.setBalance(target.getBalance().subtract(amount));
-                FinanceOperation operation = new FinanceOperation(target,"withdraw", amount, LocalDate.now());
-                userRepository.save(target);
-                financeOperationRepository.save(operation);
-                return new ResponseJson(1);
-            }
-        }
-
-        return new ResponseJson(0, "Пользователь не найден");
-    }
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ResponseJson putMoney(Long userId, BigDecimal amount){
-        if (userRepository.existsById(userId)){
-            User target = userRepository.findById(userId).get();
-            target.setBalance(target.getBalance().add(amount));
-            FinanceOperation operation = new FinanceOperation(target, "deposit", amount, LocalDate.now());
+    public ResponseJson takeMoney(Long userId, BigDecimal amount) throws UserNotFoundException {
+        User target = getUser(userId);
+        if(target.getBalance().compareTo(amount) < 0){
+            return new ResponseJson(0, "Недостаточно средств");
+        } else {
+            target.setBalance(target.getBalance().subtract(amount));
+            FinanceOperation operation = new FinanceOperation(target,"withdraw", amount, LocalDate.now());
             userRepository.save(target);
             financeOperationRepository.save(operation);
             return new ResponseJson(1);
         }
-        return new ResponseJson(0, "Пользователь не найден");
+    }
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public ResponseJson putMoney(Long userId, BigDecimal amount) throws UserNotFoundException {
+        User target = getUser(userId);
+        target.setBalance(target.getBalance().add(amount));
+        FinanceOperation operation = new FinanceOperation(target, "deposit", amount, LocalDate.now());
+        userRepository.save(target);
+        financeOperationRepository.save(operation);
+        return new ResponseJson(1);
     }
 
     @Transactional(readOnly = true)
@@ -97,9 +87,9 @@ public class FinanceService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ResponseJson transferMoney(Long senderId, Long recipientId, BigDecimal amount){
-        User sender = userRepository.findById(senderId).orElseThrow(RuntimeException::new);
-        User recipient = userRepository.findById(recipientId).orElseThrow(RuntimeException::new);
+    public ResponseJson transferMoney(Long senderId, Long recipientId, BigDecimal amount) throws UserNotFoundException{
+        User sender = getUser(senderId);
+        User recipient = getUser(recipientId);
         if (sender.getBalance().subtract(amount).compareTo(amount) >= 0){
             sender.setBalance(sender.getBalance().subtract(amount));
             recipient.setBalance(recipient.getBalance().add(amount));
@@ -112,5 +102,16 @@ public class FinanceService {
         } else {
             return new ResponseJson(0, "Недостаточно средств");
         }
+    }
+
+    public User getUser(Long userId) throws UserNotFoundException {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        return user;
+    }
+
+    public FinanceOperation getFinanceOperation(Long operationId) throws FinanceOperationNotFound{
+        FinanceOperation financeOperation = financeOperationRepository.findById(operationId)
+                .orElseThrow(FinanceOperationNotFound::new);
+        return financeOperation;
     }
 }
