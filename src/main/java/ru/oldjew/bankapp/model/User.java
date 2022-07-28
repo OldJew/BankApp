@@ -23,4 +23,13 @@ public class User {
     @Column(name = "BALANCE")
     private BigDecimal balance;
 
+    public User() {
+    }
+
+    public User(long id, String firstName, String lastName, BigDecimal balance) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.balance = balance;
+    }
 }
