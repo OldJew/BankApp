@@ -12,4 +12,4 @@ Final project on Skillfactory course. App for bank <br>
 ##### V2_DB
 ![V2_DB](https://user-images.githubusercontent.com/55951227/177976166-5315638d-51ca-456d-a51e-08aa8b3fa94f.png)
 ##### V3_DB
-![v3](https://user-images.githubusercontent.com/55951227/181587970-60d68536-0457-4dd1-80b3-a6e4318ca71b.png)
+![V3_DB](https://user-images.githubusercontent.com/55951227/181588784-8aa7e1d8-e309-4252-ba20-041216751a37.png)
