@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import ru.oldjew.bankapp.controller.UserOperationController;
+import ru.oldjew.bankapp.exceptions.UserNotFoundException;
 
 import java.math.BigDecimal;
 
@@ -14,7 +15,7 @@ public class BankAppApplication {
 
 	private static final Logger logger = LoggerFactory.getLogger(BankAppApplication.class);
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws UserNotFoundException {
 		ConfigurableApplicationContext app = SpringApplication.run(BankAppApplication.class, args);
 
 		UserOperationController userOperationController =

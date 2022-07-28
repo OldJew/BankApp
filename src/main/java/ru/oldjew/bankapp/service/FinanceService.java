@@ -90,7 +90,7 @@ public class FinanceService {
     public ResponseJson transferMoney(Long senderId, Long recipientId, BigDecimal amount) throws UserNotFoundException{
         User sender = getUser(senderId);
         User recipient = getUser(recipientId);
-        if (sender.getBalance().subtract(amount).compareTo(amount) >= 0){
+        if (sender.getBalance().subtract(amount).intValue() >= 0){
             sender.setBalance(sender.getBalance().subtract(amount));
             recipient.setBalance(recipient.getBalance().add(amount));
             userRepository.save(sender);
@@ -114,4 +114,5 @@ public class FinanceService {
                 .orElseThrow(FinanceOperationNotFound::new);
         return financeOperation;
     }
+
 }

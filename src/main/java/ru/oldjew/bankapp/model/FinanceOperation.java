@@ -34,8 +34,8 @@ public class FinanceOperation {
     private String operation;
 
     @NonNull
-    @Column(name = "VALUE", nullable = false)
-    private BigDecimal value;
+    @Column(name = "AMOUNT", nullable = false)
+    private BigDecimal amount;
 
     @Column(name = "DATE")
     private LocalDate date;
@@ -44,7 +44,7 @@ public class FinanceOperation {
                             LocalDate date) {
         this.sender = sender;
         this.operation = operation;
-        this.value = value;
+        this.amount = value;
         this.date = date;
     }
 
@@ -53,7 +53,15 @@ public class FinanceOperation {
         this.sender = sender;
         this.recipient = recipient;
         this.operation = operation;
-        this.value = value;
+        this.amount = value;
+        this.date = date;
+    }
+
+    public FinanceOperation(long id, @NonNull User sender, @NonNull String operation, @NonNull BigDecimal value, LocalDate date) {
+        this.id = id;
+        this.sender = sender;
+        this.operation = operation;
+        this.amount = value;
         this.date = date;
     }
 }
